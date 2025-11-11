@@ -1,0 +1,486 @@
+/* ============================================
+   Time Window Shrinker - Modern CSS Styles
+   ============================================ */
+
+/* CSS Custom Properties for Theming */
+:root {
+    /* Primary Colors */
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-focus: rgba(37, 99, 235, 0.1);
+
+    /* Text Colors */
+    --text: #1f2937;
+    --text-light: #6b7280;
+    --text-muted: #9ca3af;
+
+    /* Background Colors */
+    --bg: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-hover: #f3f4f6;
+
+    /* Border Colors */
+    --border: #e5e7eb;
+    --border-hover: #d1d5db;
+
+    /* Status Colors */
+    --success: #059669;
+    --error: #dc2626;
+    --warning: #d97706;
+
+    /* Spacing */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   Base Styles & Typography
+   ============================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg-secondary);
+    margin: 0;
+    padding: var(--space-xl);
+    min-height: 100vh;
+}
+
+/* ============================================
+   Layout Components
+   ============================================ */
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--bg);
+    padding: var(--space-2xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+header {
+    text-align: center;
+    margin-bottom: var(--space-2xl);
+}
+
+header h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+    color: var(--text);
+}
+
+header p {
+    color: var(--text-light);
+    font-size: 1.125rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+main {
+    margin-bottom: var(--space-2xl);
+}
+
+footer {
+    text-align: center;
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   Form Styles
+   ============================================ */
+
+.input-section {
+    margin-bottom: var(--space-2xl);
+}
+
+.input-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--space-lg);
+    color: var(--text);
+}
+
+.shrinker-form {
+    background: var(--bg-secondary);
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+/* Form Grid Layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.duration-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+.duration-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.duration-card h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.date-range-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-lg);
+}
+
+/* Form Groups */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Labels */
+label {
+    font-weight: 500;
+    margin-bottom: var(--space-sm);
+    color: var(--text);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.input-hint {
+    margin-top: var(--space-xs);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+/* Input Fields */
+input, select {
+    padding: var(--space-md);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--text);
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+/* Input Focus States */
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-focus);
+    transform: translateY(-1px);
+}
+
+/* Input Hover States */
+input:hover, select:hover {
+    border-color: var(--border-hover);
+}
+
+/* Submit Button */
+.generate-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: var(--space-md) var(--space-xl);
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: var(--space-md);
+    width: 100%;
+    max-width: 200px;
+}
+
+.generate-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.generate-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* ============================================
+   Results Section Styles
+   ============================================ */
+
+.results-section {
+    background: var(--bg-secondary);
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+.results-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--space-lg);
+    color: var(--text);
+}
+
+/* Schedule Table */
+.schedule-container {
+    overflow-x: auto;
+    margin-bottom: var(--space-lg);
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.schedule-table thead {
+    background: var(--bg-secondary);
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding: var(--space-md);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.schedule-table th {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+}
+
+.schedule-table td {
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    font-size: 0.95rem;
+    color: var(--text-light);
+}
+
+.schedule-table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+/* Summary Section */
+.summary {
+    background: var(--bg);
+    padding: var(--space-lg);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.summary h3 {
+    margin: 0 0 var(--space-md) 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.summary-item {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.summary-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.summary-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.collapse-info {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: var(--space-md);
+}
+
+.summary-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--border);
+}
+
+.export-btn {
+    background: var(--success);
+    color: white;
+    border: none;
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.export-btn:hover {
+    background: #047857;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.export-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+.hidden {
+    display: none !important;
+}
+
+.error {
+    color: var(--error);
+    margin-top: var(--space-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: block;
+}
+
+.success {
+    color: var(--success);
+    margin-top: var(--space-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+/* Tablet and smaller screens */
+@media (max-width: 768px) {
+    body {
+        padding: var(--space-lg);
+    }
+
+    .container {
+        padding: var(--space-lg);
+    }
+
+    header h1 {
+        font-size: 1.875rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    .duration-section {
+        grid-template-columns: 1fr;
+    }
+
+    .date-range-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .schedule-table th,
+    .schedule-table td {
+        padding: var(--space-sm);
+        font-size: 0.875rem;
+    }
+
+    .generate-btn {
+        max-width: none;
+    }
+}
+
+/* Mobile screens */
+@media (max-width: 480px) {
+    body {
+        padding: var(--space-md);
+    }
+
+    .container {
+        padding: var(--space-md);
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    .schedule-table {
+        font-size: 0.875rem;
+    }
+}

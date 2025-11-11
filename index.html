@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Window Shrinker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Time Window Shrinker</h1>
+            <p>Simulate progressive narrowing of a daily time window until it collapses to a single point.</p>
+        </header>
+
+        <main>
+            <!-- Input Form Section -->
+            <section class="input-section">
+                <h2>Configure Schedule</h2>
+                <form id="shrinker-form" class="shrinker-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="start-time">Start Time</label>
+                            <input type="time" id="start-time" value="08:00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="end-time">End Time</label>
+                            <input type="time" id="end-time" value="22:00" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rounding">Rounding Mode</label>
+                            <select id="rounding">
+                                <option value="nearest">Nearest</option>
+                                <option value="floor">Floor</option>
+                                <option value="ceil">Ceil</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="finish-mode">Finish Mode</label>
+                            <select id="finish-mode">
+                                <option value="inclusive">Inclusive (collapse on day N)</option>
+                                <option value="after-steps">After Steps (collapse after N days)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="duration-section">
+                        <div class="duration-card">
+                            <h3>Number of Days</h3>
+                            <div class="form-group">
+                                <label for="days">Manual Entry</label>
+                                <input type="number" id="days" min="1" placeholder="e.g., 10">
+                                <span class="input-hint">Leave blank to drive the schedule from a date range.</span>
+                            </div>
+                        </div>
+
+                        <div class="duration-card">
+                            <h3>Date Range</h3>
+                            <div class="date-range-grid">
+                                <div class="form-group">
+                                    <label for="start-date">Start Date</label>
+                                    <input type="date" id="start-date">
+                                    <span class="input-hint">Defaults to today; used when end date is provided.</span>
+                                </div>
+                                <div class="form-group">
+                                    <label for="end-date">End Date</label>
+                                    <input type="date" id="end-date">
+                                    <span class="input-hint">Must be on or after the start date.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="generate-btn">Generate Schedule</button>
+                </form>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results" class="results-section hidden">
+                <h2>Generated Schedule</h2>
+
+                <div class="summary">
+                    <h3>Run Summary</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="summary-label">Daily interval shrink (total)</span>
+                            <span class="summary-value" id="summary-daily-shrink">--</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Per side shrink</span>
+                            <span class="summary-value" id="summary-per-side-shrink">--</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Collapse time</span>
+                            <span class="summary-value" id="summary-collapse-time">--</span>
+                        </div>
+                    </div>
+                    <div class="collapse-info" id="collapse-info"></div>
+                    <div class="summary-actions">
+                        <button type="button" id="export-csv-btn" class="export-btn">Export to CSV</button>
+                    </div>
+                </div>
+
+                <div class="schedule-container">
+                    <table id="schedule-table" class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-body">
+                            <!-- Schedule rows will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Algorithm ported from Python CLI tool. Handles midnight-crossing windows and multiple rounding modes.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
