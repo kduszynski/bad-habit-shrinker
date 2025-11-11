@@ -1,5 +1,7 @@
 # Time Window Shrinker - Web Application
 
+**Generated with different LLM models support.**
+
 A modern, minimalistic web application that simulates the progressive narrowing of a daily time window until it collapses to a single point ("hour zero").
 
 ## 🚀 Quick Start
