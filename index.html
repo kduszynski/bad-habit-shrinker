@@ -70,6 +70,17 @@
                                     <option value="after-steps">After Steps (collapse after N days)</option>
                                 </select>
                             </div>
+
+                            <!-- Algorithm Selection -->
+                            <div class="form-group">
+                                <label for="algorithm">Algorithm</label>
+                                <select id="algorithm">
+                                    <option value="linear">Linear – equal step</option>
+                                    <option value="percentage">Percentage – fixed %</option>
+                                    <option value="logistic">Logistic – S-curve</option>
+                                    <option value="sinusoidal">Sinusoidal – taper</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -95,6 +106,11 @@
                         <div class="summary-item">
                             <span class="summary-label">Collapse time</span>
                             <span class="summary-value" id="summary-collapse-time">--</span>
+                        </div>
+                        <!-- Algorithm info -->
+                        <div class="summary-item">
+                            <span class="summary-label">Algorithm</span>
+                            <span class="summary-value" id="summary-algo">--</span>
                         </div>
                     </div>
                     <div class="collapse-info" id="collapse-info"></div>

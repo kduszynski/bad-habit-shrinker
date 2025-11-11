@@ -165,18 +165,77 @@ function computeDailyStep(startMin, endMin, days, finishOnDay) {
 }
 
 /**
+ * Compute offset per side for each day based on algorithm type.
+ * Returns array of offsets (minutes) where offsets[i] is per-side offset on day i (1-based).
+ */
+function computeOffsetsByAlgorithm(startMin, endMin, days, finishOnDay, algorithmType, percentage = 0.05) {
+    const L = calculateWindowLength(startMin, endMin);
+    const halfL = L / 2;
+
+    // Helper for rounding collapse day according to finish mode (only used for linear)
+    if (algorithmType === 'linear') {
+        const m = computeDailyStep(startMin, endMin, days, finishOnDay);
+        const offsets = [];
+        for (let d = 1; d <= days; d++) {
+            offsets.push((d - 1) * m);
+        }
+        return offsets;
+    }
+
+    // For non-linear algorithms we ignore finishOnDay and collapse exactly on day N
+    const offsets = [];
+
+    if (algorithmType === 'percentage') {
+        // Shrink by fixed percentage of current length; final day clamps to collapse
+        let currentLen = L;
+        let cumulativeOffset = 0;
+        for (let d = 1; d <= days; d++) {
+            offsets.push(cumulativeOffset);
+            if (d === days) {
+                cumulativeOffset = halfL; // collapse
+            } else {
+                const shrinkThisDay = currentLen * percentage;
+                cumulativeOffset += shrinkThisDay / 2;
+                currentLen -= shrinkThisDay;
+            }
+        }
+    } else if (algorithmType === 'logistic') {
+        const k = 6; // steepness factor; bigger => steeper middle
+        const logistic = (x) => 1 / (1 + Math.exp(-k * (x - 0.5)));
+        const startVal = logistic(0);
+        const endVal = logistic(1);
+        const denom = endVal - startVal;
+        for (let d = 1; d <= days; d++) {
+            const xPrev = (d - 1) / (days - 1);
+            const xCurr = xPrev; // offset computed directly on xPrev
+            const frac = (logistic(xCurr) - startVal) / denom; // 0..1
+            offsets.push(halfL * frac);
+        }
+    } else if (algorithmType === 'sinusoidal') {
+        for (let d = 1; d <= days; d++) {
+            const t = (d - 1) / (days - 1); // 0..1
+            const frac = (1 - Math.cos(Math.PI * t)) / 2; // 0..1
+            offsets.push(halfL * frac);
+        }
+    } else {
+        throw new Error(`Unsupported algorithm type: ${algorithmType}`);
+    }
+
+    return offsets;
+}
+
+/**
  * Generate the complete schedule of shrinking time windows
  * @param {number} startMin - Initial start time in minutes
  * @param {number} endMin - Initial end time in minutes
  * @param {number} days - Number of days
  * @param {string} finishOnDay - Interpretation mode
  * @param {string} rounding - Rounding mode ("nearest", "floor", "ceil")
+ * @param {string} algorithmType - Algorithm variant
  * @returns {Array} Array of schedule row objects
  */
-function generateSchedule(startMin, endMin, days, finishOnDay, rounding, dailyStepOverride) {
-    const dailyStep = typeof dailyStepOverride === 'number'
-        ? dailyStepOverride
-        : computeDailyStep(startMin, endMin, days, finishOnDay);
+function generateSchedule(startMin, endMin, days, finishOnDay, rounding, algorithmType) {
+    const offsets = computeOffsetsByAlgorithm(startMin, endMin, days, finishOnDay, algorithmType);
 
     // Define rounding function based on mode
     const roundFunctions = {
@@ -192,9 +251,8 @@ function generateSchedule(startMin, endMin, days, finishOnDay, rounding, dailySt
 
     const schedule = [];
 
-    // Generate schedule for each day
     for (let day = 1; day <= days; day++) {
-        const offset = (day - 1) * dailyStep;
+        const offset = offsets[day - 1];
 
         // Calculate start and end times for this day
         const dayStart = roundFunc(startMin + offset);
@@ -329,24 +387,17 @@ function handleFormSubmit(event) {
         validateFormData(formData);
 
         // Generate schedule
-        const dailyStep = computeDailyStep(
-            formData.startMin,
-            formData.endMin,
-            formData.days,
-            formData.finishMode
-        );
-
         const schedule = generateSchedule(
             formData.startMin,
             formData.endMin,
             formData.days,
             formData.finishMode,
             formData.rounding,
-            dailyStep
+            formData.algorithm
         );
 
         // Display results
-        displayResults(schedule, formData.startMin, formData.endMin, dailyStep, formData.finishMode, formData.days);
+        displayResults(schedule, formData.startMin, formData.endMin, formData.finishMode, formData.days, formData.algorithm);
 
     } catch (error) {
         displayError(error.message);
@@ -363,6 +414,7 @@ function getFormData() {
     const daysInput = document.getElementById('days');
     const finishMode = document.getElementById('finish-mode').value;
     const rounding = document.getElementById('rounding').value;
+    const algorithm = document.getElementById('algorithm').value;
     const startDateInput = document.getElementById('start-date');
     const endDateInput = document.getElementById('end-date');
 
@@ -388,6 +440,7 @@ function getFormData() {
         days: days,
         finishMode: finishMode,
         rounding: rounding,
+        algorithm: algorithm,
         startTime: startTime,
         endTime: endTime,
         daysSource: usingManualDays ? 'manual' : (usingDateRange ? 'range' : null),
@@ -456,13 +509,14 @@ function displayError(message) {
  * @param {number} startMin - Original start time
  * @param {number} endMin - Original end time
  */
-function displayResults(schedule, startMin, endMin, dailyStep, finishMode, totalDays) {
+function displayResults(schedule, startMin, endMin, finishMode, totalDays, algorithmType) {
     const resultsSection = document.getElementById('results');
     const scheduleBody = document.getElementById('schedule-body');
     const collapseInfo = document.getElementById('collapse-info');
     const summaryDailyShrink = document.getElementById('summary-daily-shrink');
     const summaryPerSideShrink = document.getElementById('summary-per-side-shrink');
     const summaryCollapseTime = document.getElementById('summary-collapse-time');
+    const summaryAlgo = document.getElementById('summary-algo');
 
     if (!resultsSection || !scheduleBody || !collapseInfo || !summaryDailyShrink || !summaryPerSideShrink || !summaryCollapseTime) {
         console.error('Required DOM elements not found');
@@ -489,8 +543,15 @@ function displayResults(schedule, startMin, endMin, dailyStep, finishMode, total
     const windowLength = calculateWindowLength(startMin, endMin);
     const collapseTime = Math.round((startMin + windowLength / 2) % DAY_MINUTES);
 
-    const dailyShrinkMinutes = Math.max(0, Math.round(dailyStep * 2));
-    const perSideShrinkMinutes = Math.max(0, Math.round(dailyStep));
+    // For non-linear algorithms daily shrink is variable; display N/A
+    let dailyShrinkMinutes = '--';
+    let perSideShrinkMinutes = '--';
+
+    if (algorithmType === 'linear') {
+        const m = computeDailyStep(startMin, endMin, totalDays, finishMode);
+        dailyShrinkMinutes = Math.max(0, Math.round(m * 2));
+        perSideShrinkMinutes = Math.max(0, Math.round(m));
+    }
     
     summaryDailyShrink.textContent = `${dailyShrinkMinutes} min/day`;
     summaryPerSideShrink.textContent = `${perSideShrinkMinutes} min/day (each side)`;
@@ -500,6 +561,7 @@ function displayResults(schedule, startMin, endMin, dailyStep, finishMode, total
         : collapseTime;
 
     summaryCollapseTime.textContent = formatHHMM(collapseMoment);
+    summaryAlgo.textContent = algorithmType.charAt(0).toUpperCase() + algorithmType.slice(1);
 
     let collapseDescriptor = '';
     if (finishMode === 'inclusive') {
@@ -519,7 +581,8 @@ function displayResults(schedule, startMin, endMin, dailyStep, finishMode, total
         perSideShrink: perSideShrinkMinutes,
         collapseTime: formatHHMM(collapseMoment),
         totalDays: totalDays,
-        finishMode: finishMode
+        finishMode: finishMode,
+        algorithm: algorithmType
     };
 
     // Show results section
@@ -550,7 +613,7 @@ function handleExportCSV() {
  * @param {Object} scheduleData - Schedule data object
  */
 function exportScheduleToCSV(scheduleData) {
-    const { schedule, startTime, endTime, dailyShrink, perSideShrink, collapseTime, totalDays, finishMode } = scheduleData;
+    const { schedule, startTime, endTime, dailyShrink, perSideShrink, collapseTime, totalDays, finishMode, algorithm } = scheduleData;
 
     // Create CSV header
     const headers = ['Day', 'Start Time', 'End Time'];
@@ -574,6 +637,7 @@ function exportScheduleToCSV(scheduleData) {
     csvRows.push(`# Collapse Time,${collapseTime}`);
     csvRows.push(`# Total Days,${totalDays}`);
     csvRows.push(`# Finish Mode,${finishMode}`);
+    csvRows.push(`# Algorithm,${algorithm}`);
 
     // Create CSV content
     const csvContent = csvRows.join('\n');

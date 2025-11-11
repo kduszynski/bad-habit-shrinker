@@ -2,11 +2,9 @@
 
 **Generated with different LLM models support.**
 
-A modern, minimalistic web application that simulates the progressive narrowing of a daily time window until it collapses to a single point ("hour zero").
+A modern, mobile-first web application that simulates the progressive narrowing of a daily time window until it collapses to a single point.
 
 ## 🚀 Quick Start
-
-### Running the Application
 
 1. **Start the web server:**
    ```bash
@@ -24,30 +22,19 @@ This web application calculates how a time window shrinks progressively over mul
 
 ## 🎯 Features
 
-### Core Functionality
-- **Time Window Input**: HTML5 time inputs with default values (08:00 - 22:00)
-- **Flexible Duration Input**: Two ways to specify the schedule duration:
-  - **Manual Entry**: Enter number of days directly
-  - **Date Range**: Select start and end dates (auto-calculates days)
-- **Two Finish Modes**: Different interpretations of day counting
-- **Multiple Rounding Options**: Nearest, floor, and ceiling rounding modes
-- **Midnight Crossing**: Handles time windows that span midnight
+- **Simplified Form**: Essential fields (start time, end time, days) shown first
+- **Collapsible Settings**: Advanced options (rounding mode, finish mode) hidden behind "More Settings" toggle
+- **Mobile-First Design**: Optimized for mobile devices with touch-friendly inputs
+- **Flexible Duration**: Enter days directly or use date range
+- **Run Summary**: Key metrics displayed before schedule table
+- **CSV Export**: One-click export with metadata
+- **Midnight Crossing**: Handles time windows spanning midnight
 
-### User Interface
-- **Modern UI**: Clean, responsive design with CSS custom properties
-- **Run Summary Card**: Displays key metrics before the schedule table:
-  - Daily interval shrink (total)
-  - Per side shrink (each end)
-  - Collapse time
-- **Schedule Table**: Formatted table showing day-by-day progression
-- **CSV Export**: One-click export of schedule data with summary metadata
-- **Error Handling**: Clear validation messages and user feedback
-
-### Smart Defaults
-- Start time defaults to **08:00**
-- End time defaults to **22:00**
-- Start date defaults to **today**
-- End date defaults to **end of current year**
+### Defaults
+- Start time: 08:00
+- End time: 22:00
+- Start date: Today
+- End date: End of current year
 
 ## 🏗️ Architecture
 
@@ -102,169 +89,79 @@ When using date range input:
 
 ## 📖 Usage
 
-### Input Parameters
+### Essential Fields
+1. **Start Time** - Beginning of time window (default: 08:00)
+2. **End Time** - End of time window (default: 22:00)
+3. **Number of Days** - Enter directly OR use date range below
 
-| Field | Type | Description | Default |
-|-------|------|-------------|---------|
-| **Start Time** | Time | Beginning of the time window | 08:00 |
-| **End Time** | Time | End of the time window | 22:00 |
-| **Duration** | Number or Date Range | Number of days or date range | - |
-| **Finish Mode** | Select | How to interpret "days" | Inclusive |
-| **Rounding** | Select | Rounding method for minutes | Nearest |
+### Date Range (Optional)
+- Select start and end dates to auto-calculate days
+- Leave empty if using manual days entry
 
-### Duration Input Options
+### Advanced Settings (Click "More Settings")
+- **Finish Mode**:
+  - `Inclusive` - Collapse on day N
+  - `After Steps` - Collapse after N steps (on day N+1)
+- **Rounding Mode**:
+  - `Nearest` - Round to nearest minute (default)
+  - `Floor` - Round down
+  - `Ceil` - Round up
 
-**Option 1: Manual Entry**
-- Enter the number of days directly in the "Number of Days" field
-- Leave date range fields empty
+## 📊 Output
 
-**Option 2: Date Range**
-- Leave "Number of Days" field empty
-- Select start date (defaults to today)
-- Select end date (defaults to end of year)
-- Days are automatically calculated from the date difference
+**Run Summary** displays:
+- Daily interval shrink (total minutes/day)
+- Per side shrink (minutes/day each side)
+- Collapse time (when window reaches zero)
 
-### Finish Mode Options
+**CSV Export** includes schedule data and metadata summary.
 
-- **Inclusive**: Collapse occurs ON day N (today = day 1)
-  - Example: 10 days means collapse on day 10
-- **After-Steps**: Perform N narrowing steps, collapse on day N+1
-  - Example: 10 days means collapse on day 11
+Filename: `time-window-schedule-YYYYMMDD.csv`
 
-### Rounding Modes
+## 🎨 Design
 
-- **Nearest**: Round to nearest minute (default)
-- **Floor**: Always round down
-- **Ceil**: Always round up
-
-## 📊 Run Summary
-
-The Run Summary card displays:
-
-- **Daily interval shrink (total)**: Total minutes the window narrows per day (both sides combined)
-- **Per side shrink**: Minutes each side (start/end) shrinks per day
-- **Collapse time**: The exact time when the window collapses to a single point
-
-## 💾 CSV Export
-
-The exported CSV file includes:
-
-1. **Schedule Data**: Day, Start Time, End Time columns
-2. **Summary Metadata**: Comment lines with:
-   - Initial start and end times
-   - Daily interval shrink (total)
-   - Per side shrink
-   - Collapse time
-   - Total days
-   - Finish mode
-
-Filename format: `time-window-schedule-YYYYMMDD.csv`
-
-## 🎨 Design System
-
-### Color Palette
-```css
---primary: #2563eb        /* Blue-600 */
---primary-hover: #1d4ed8   /* Blue-700 */
---success: #059669        /* Green-600 */
---text: #1f2937          /* Gray-800 */
---text-light: #6b7280     /* Gray-500 */
---bg: #ffffff            /* White */
---bg-secondary: #f9fafb   /* Gray-50 */
---border: #e5e7eb        /* Gray-200 */
---error: #dc2626         /* Red-600 */
-```
-
-### Typography
-- **Font Family**: Inter, system fonts
-- **Line Height**: 1.6
-- **Responsive Sizing**: Fluid typography
-
-### Components
-- **Form Grid**: CSS Grid with auto-fit columns
-- **Duration Cards**: Card-based layout for duration input options
-- **Summary Card**: Prominent display of key metrics
-- **Table**: Monospace font for time columns
-- **Buttons**: Primary and success colors with hover states
+- **Color Scheme**: Professional blue palette with light backgrounds
+- **Typography**: Inter font family, responsive sizing
+- **Layout**: Mobile-first, single column on mobile, grid on larger screens
+- **Components**: Collapsible sections, touch-friendly inputs (44px+), concise spacing
 
 ## 📱 Responsive Design
 
-### Breakpoints
-- **Desktop**: > 768px (grid layout)
-- **Tablet**: 480px - 768px (stacked layout)
-- **Mobile**: < 480px (compact spacing)
+**Mobile-First Approach**
+- Base styles optimized for mobile (< 768px)
+- Single column layout, compact spacing
+- Touch-friendly inputs (min 44px height)
+- Horizontal scroll for tables
 
-### Mobile Optimizations
-- Touch-friendly inputs
-- Stacked form layout
-- Optimized table scrolling
-- Readable typography on small screens
+**Tablet & Desktop** (≥ 768px)
+- Grid layout for form fields
+- Increased spacing and padding
+- Multi-column summary cards
 
 ## 🧪 Testing
 
-### Unit Tests
-Run the JavaScript algorithm tests:
+Run unit tests:
 ```bash
 node test_js_functions.js
 ```
 
-### Test Scenarios
-- ✅ Normal operation (09:00-21:00, 10 days)
-- ✅ Midnight crossing (22:30-05:15, 7 days)
-- ✅ Single day schedules
-- ✅ Both finish modes
-- ✅ All rounding modes
-- ✅ Date range calculation
-- ✅ Invalid inputs and error handling
+Tests cover: normal operation, midnight crossing, all finish/rounding modes, date range calculation, error handling.
 
-## 🔍 Browser Compatibility
+## 🔍 Browser Support
 
-- **Modern Browsers**: Full support (Chrome, Firefox, Safari, Edge)
-- **HTML5 Features**: `<input type="time">`, `<input type="date">`, CSS Grid, Flexbox
-- **JavaScript**: ES6+ features (const/let, arrow functions, template literals)
+Modern browsers (Chrome, Firefox, Safari, Edge). Uses HTML5 inputs, CSS Grid, Flexbox, ES6+ JavaScript.
 
-## 🚀 Performance
-
-- **Algorithm Complexity**: O(n) where n = number of days
-- **DOM Operations**: Minimal, efficient table generation
-- **Bundle Size**: ~10KB total (HTML + CSS + JS)
-- **Load Time**: Instant on modern connections
+**Performance**: O(n) algorithm, minimal DOM operations, ~10KB total bundle size.
 
 ## 🛠️ Development
 
 ### File Structure
 ```
-├── index.html (~3KB)     - Semantic HTML structure
-├── styles.css (~6KB)     - Modular CSS with custom properties
-├── script.js (~12KB)     - Organized JavaScript modules
-├── test_js_functions.js  - Test suite
-└── main.py              - Original Python CLI tool
-```
-
-### Code Quality
-- **Readable**: Clear function names and comments
-- **Maintainable**: Modular structure and separation of concerns
-- **Testable**: Pure functions for algorithm logic
-- **Accessible**: Semantic HTML and ARIA attributes
-
-## 📊 Example Outputs
-
-### Basic Schedule (10 days, inclusive)
-```
-Day  Start   End
-1    09:00   21:00
-2    09:40   20:20
-...  ...     ...
-10   15:00   15:00  ← Collapse point
-```
-
-### Midnight Crossing (7 days)
-```
-Day  Start   End
-1    22:30   05:15
-2    23:04   04:41
-...  ...     ...
-7    01:53   01:53  ← Collapse point
+├── index.html          - HTML structure with collapsible settings
+├── styles.css          - Mobile-first CSS with custom properties
+├── script.js           - Algorithm logic and DOM manipulation
+├── test_js_functions.js - Unit tests
+└── main.py            - Original Python CLI tool
 ```
 
 ---
@@ -330,17 +227,8 @@ The web version adds:
 
 ## 🤝 Contributing
 
-1. Test your changes with `node test_js_functions.js`
-2. Ensure responsive design works on mobile
-3. Follow the existing code style and documentation
-4. Add tests for new features
-
-## 📄 License
-
-This project is a web port of the original Python Time Window Shrinker algorithm.
+Test changes with `node test_js_functions.js`. Ensure mobile-first design works correctly.
 
 ---
 
-**Built with:** HTML5, CSS3, ES6 JavaScript  
-**Algorithm:** Ported from Python CLI tool  
-**Design:** Modern, minimalistic web interface
+**Built with:** HTML5, CSS3, ES6 JavaScript | **Algorithm:** Ported from Python CLI tool
