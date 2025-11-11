@@ -18,7 +18,8 @@
             <section class="input-section">
                 <h2>Configure Schedule</h2>
                 <form id="shrinker-form" class="shrinker-form">
-                    <div class="form-grid">
+                    <!-- Essential Fields -->
+                    <div class="form-essential">
                         <div class="form-group">
                             <label for="start-time">Start Time</label>
                             <input type="time" id="start-time" value="08:00" required>
@@ -30,46 +31,44 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="rounding">Rounding Mode</label>
-                            <select id="rounding">
-                                <option value="nearest">Nearest</option>
-                                <option value="floor">Floor</option>
-                                <option value="ceil">Ceil</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="finish-mode">Finish Mode</label>
-                            <select id="finish-mode">
-                                <option value="inclusive">Inclusive (collapse on day N)</option>
-                                <option value="after-steps">After Steps (collapse after N days)</option>
-                            </select>
+                            <label for="days">Number of Days</label>
+                            <input type="number" id="days" min="1" placeholder="e.g., 10">
+                            <span class="input-hint">Or use date range below</span>
                         </div>
                     </div>
 
-                    <div class="duration-section">
-                        <div class="duration-card">
-                            <h3>Number of Days</h3>
-                            <div class="form-group">
-                                <label for="days">Manual Entry</label>
-                                <input type="number" id="days" min="1" placeholder="e.g., 10">
-                                <span class="input-hint">Leave blank to drive the schedule from a date range.</span>
-                            </div>
+                    <!-- Date Range (Simplified) -->
+                    <div class="form-group date-range-simple">
+                        <label>Date Range (optional)</label>
+                        <div class="date-inputs">
+                            <input type="date" id="start-date" placeholder="Start date">
+                            <span class="date-separator">to</span>
+                            <input type="date" id="end-date" placeholder="End date">
                         </div>
+                    </div>
 
-                        <div class="duration-card">
-                            <h3>Date Range</h3>
-                            <div class="date-range-grid">
-                                <div class="form-group">
-                                    <label for="start-date">Start Date</label>
-                                    <input type="date" id="start-date">
-                                    <span class="input-hint">Defaults to today; used when end date is provided.</span>
-                                </div>
-                                <div class="form-group">
-                                    <label for="end-date">End Date</label>
-                                    <input type="date" id="end-date">
-                                    <span class="input-hint">Must be on or after the start date.</span>
-                                </div>
+                    <!-- Advanced Settings (Collapsible) -->
+                    <div class="advanced-settings">
+                        <button type="button" id="toggle-settings" class="toggle-settings-btn" aria-expanded="false">
+                            <span class="toggle-text">More Settings</span>
+                            <span class="toggle-icon">▼</span>
+                        </button>
+                        <div id="advanced-settings-content" class="advanced-settings-content hidden">
+                            <div class="form-group">
+                                <label for="rounding">Rounding Mode</label>
+                                <select id="rounding">
+                                    <option value="nearest">Nearest</option>
+                                    <option value="floor">Floor</option>
+                                    <option value="ceil">Ceil</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="finish-mode">Finish Mode</label>
+                                <select id="finish-mode">
+                                    <option value="inclusive">Inclusive (collapse on day N)</option>
+                                    <option value="after-steps">After Steps (collapse after N days)</option>
+                                </select>
                             </div>
                         </div>
                     </div>

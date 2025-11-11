@@ -220,7 +220,44 @@ let currentScheduleData = null;
 /**
  * Initialize the application when DOM is loaded
  */
+// ============================================
+// Settings Toggle Handler
+// ============================================
+
+/**
+ * Initialize the advanced settings toggle functionality
+ */
+function initializeSettingsToggle() {
+    const toggleBtn = document.getElementById('toggle-settings');
+    const settingsContent = document.getElementById('advanced-settings-content');
+    const toggleIcon = toggleBtn?.querySelector('.toggle-icon');
+    const toggleText = toggleBtn?.querySelector('.toggle-text');
+
+    if (!toggleBtn || !settingsContent) return;
+
+    toggleBtn.addEventListener('click', function() {
+        const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        const newExpanded = !isExpanded;
+
+        toggleBtn.setAttribute('aria-expanded', newExpanded);
+        settingsContent.classList.toggle('hidden', !newExpanded);
+        
+        if (toggleIcon) {
+            toggleIcon.textContent = newExpanded ? '▲' : '▼';
+        }
+        if (toggleText) {
+            toggleText.textContent = newExpanded ? 'Less Settings' : 'More Settings';
+        }
+    });
+}
+
+// ============================================
+// Main Application Initialization
+// ============================================
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize settings toggle
+    initializeSettingsToggle();
     const form = document.getElementById('shrinker-form');
     const startDateInput = document.getElementById('start-date');
     const endDateInput = document.getElementById('end-date');

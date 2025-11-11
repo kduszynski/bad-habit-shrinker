@@ -134,7 +134,7 @@ body {
     background: var(--bg-gradient);
     background-attachment: fixed;
     margin: 0;
-    padding: var(--space-xl);
+    padding: var(--space-md);
     min-height: 100vh;
     font-feature-settings: 'kern' 1, 'liga' 1;
     text-rendering: optimizeLegibility;
@@ -148,8 +148,8 @@ body {
     max-width: 900px;
     margin: 0 auto;
     background: var(--bg-card);
-    padding: var(--space-2xl);
-    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--border-accent);
     backdrop-filter: var(--blur-sm);
@@ -175,7 +175,7 @@ header {
 }
 
 header h1 {
-    font-size: 2.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
     margin-bottom: var(--space-sm);
     color: var(--primary);
@@ -185,9 +185,10 @@ header h1 {
 
 header p {
     color: var(--text-light);
-    font-size: 1.125rem;
+    font-size: 0.9375rem;
     max-width: 600px;
     margin: 0 auto;
+    line-height: 1.5;
 }
 
 main {
@@ -217,122 +218,129 @@ footer p {
 }
 
 .input-section h2 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
     color: var(--text);
     letter-spacing: -0.01em;
 }
 
 .shrinker-form {
     background: var(--bg-secondary);
-    padding: var(--space-xl);
+    padding: var(--space-md);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
     transition: all var(--transition-base);
-    position: relative;
-    overflow: hidden;
 }
 
-.shrinker-form::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: var(--primary-gradient-alt);
-    opacity: 0;
-    transition: opacity var(--transition-base);
-}
-
-.shrinker-form:hover {
-    box-shadow: var(--shadow-md);
-    border-color: var(--border-accent);
-}
-
-.shrinker-form:hover::before {
-    opacity: 1;
-}
-
-/* Form Grid Layout */
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--space-lg);
-    margin-bottom: var(--space-lg);
-}
-
-.duration-section {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: var(--space-lg);
-    margin-bottom: var(--space-lg);
-}
-
-.duration-card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    box-shadow: var(--shadow-sm);
+/* Essential Form Fields - Mobile First */
+.form-essential {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
-    transition: all var(--transition-base);
-    position: relative;
-    overflow: hidden;
+    margin-bottom: var(--space-md);
 }
 
-.duration-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
+/* Date Range Simplified */
+.date-range-simple {
+    margin-bottom: var(--space-md);
+}
+
+.date-inputs {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.date-inputs input {
+    flex: 1;
+    min-width: 140px;
+}
+
+.date-separator {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+/* Advanced Settings Toggle */
+.advanced-settings {
+    margin-bottom: var(--space-md);
+}
+
+.toggle-settings-btn {
     width: 100%;
-    height: 3px;
-    background: var(--primary-gradient);
-    opacity: 0;
-    transition: opacity var(--transition-base);
-    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.2);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all var(--transition-base);
+    margin-bottom: var(--space-sm);
 }
 
-.duration-card:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
+.toggle-settings-btn:hover {
+    background: var(--bg-hover);
     border-color: var(--border-hover);
-    background: var(--bg);
-}
-
-.duration-card:hover::before {
-    opacity: 1;
-}
-
-.duration-card h3 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
     color: var(--text);
-    letter-spacing: -0.01em;
 }
 
-.date-range-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--space-lg);
+.toggle-settings-btn:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-focus);
+}
+
+.toggle-icon {
+    font-size: 0.75rem;
+    transition: transform var(--transition-base);
+    margin-left: var(--space-sm);
+}
+
+.advanced-settings-content {
+    padding: var(--space-md);
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    animation: slideDown 0.2s ease-out;
+}
+
+.advanced-settings-content.hidden {
+    display: none;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Form Groups */
 .form-group {
     display: flex;
     flex-direction: column;
+    gap: var(--space-xs);
 }
 
 /* Labels */
 label {
     font-weight: 500;
-    margin-bottom: var(--space-sm);
     color: var(--text);
     font-size: 0.875rem;
     text-transform: uppercase;
@@ -340,7 +348,6 @@ label {
 }
 
 .input-hint {
-    margin-top: var(--space-xs);
     color: var(--text-muted);
     font-size: 0.75rem;
     text-transform: none;
@@ -349,9 +356,9 @@ label {
 
 /* Input Fields */
 input, select {
-    padding: 0.75rem 1rem;
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius-md);
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
     font-size: 1rem;
     font-family: inherit;
     background: var(--bg);
@@ -359,6 +366,7 @@ input, select {
     transition: all var(--transition-base);
     width: 100%;
     appearance: none;
+    min-height: 44px; /* Better touch target for mobile */
 }
 
 input::placeholder {
@@ -395,15 +403,15 @@ select {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 0.875rem 2rem;
+    padding: 0.875rem 1.5rem;
     border-radius: var(--radius-md);
     font-weight: 600;
     font-size: 1rem;
     cursor: pointer;
     transition: all var(--transition-base);
-    margin-top: var(--space-md);
+    margin-top: var(--space-sm);
     width: 100%;
-    max-width: 220px;
+    min-height: 48px; /* Better touch target for mobile */
     box-shadow: var(--shadow-sm);
     position: relative;
     overflow: hidden;
@@ -447,7 +455,7 @@ select {
 
 .results-section {
     background: var(--bg-secondary);
-    padding: var(--space-xl);
+    padding: var(--space-md);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-md);
@@ -466,9 +474,9 @@ select {
 }
 
 .results-section h2 {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
     color: var(--text);
     letter-spacing: -0.01em;
 }
@@ -496,23 +504,25 @@ select {
 
 .schedule-table th,
 .schedule-table td {
-    padding: var(--space-md);
+    padding: var(--space-sm) var(--space-xs);
     text-align: left;
     border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
 }
 
 .schedule-table th {
     font-weight: 600;
     color: white;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     white-space: nowrap;
+    padding: var(--space-sm);
 }
 
 .schedule-table td {
     font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-    font-size: 0.95rem;
+    font-size: 0.8125rem;
     color: var(--text-light);
 }
 
@@ -531,11 +541,11 @@ select {
 /* Summary Section */
 .summary {
     background: var(--bg);
-    padding: var(--space-xl);
+    padding: var(--space-md);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-md);
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-md);
     position: relative;
     overflow: hidden;
 }
@@ -559,16 +569,16 @@ select {
 
 .summary-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: var(--space-md);
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
     margin-bottom: var(--space-md);
 }
 
 .summary-item {
     background: var(--bg-secondary);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: var(--space-lg);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
     display: flex;
     flex-direction: column;
     gap: var(--space-xs);
@@ -608,7 +618,7 @@ select {
 }
 
 .summary-value {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 600;
     color: var(--primary);
 }
@@ -703,64 +713,79 @@ select {
    Responsive Design
    ============================================ */
 
-/* Tablet and smaller screens */
-@media (max-width: 768px) {
+/* Tablet and larger screens */
+@media (min-width: 768px) {
     body {
-        padding: var(--space-lg);
+        padding: var(--space-xl);
     }
 
     .container {
-        padding: var(--space-lg);
+        padding: var(--space-2xl);
     }
 
     header h1 {
-        font-size: 2rem;
+        font-size: 2.25rem;
     }
 
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: var(--space-md);
+    header p {
+        font-size: 1.125rem;
     }
 
-    .duration-section {
-        grid-template-columns: 1fr;
+    .shrinker-form {
+        padding: var(--space-xl);
     }
 
-    .date-range-grid {
-        grid-template-columns: 1fr;
-        gap: var(--space-md);
+    .form-essential {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-lg);
+    }
+
+    .date-inputs {
+        flex-wrap: nowrap;
     }
 
     .summary-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .input-section h2,
+    .results-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .summary {
+        padding: var(--space-xl);
+    }
+
+    .results-section {
+        padding: var(--space-xl);
     }
 
     .schedule-table th,
     .schedule-table td {
-        padding: var(--space-sm);
+        padding: var(--space-md);
         font-size: 0.875rem;
+    }
+
+    .schedule-table th {
+        font-size: 0.875rem;
+    }
+
+    .schedule-table td {
+        font-size: 0.95rem;
     }
 
     .generate-btn {
-        max-width: none;
+        max-width: 220px;
+        margin-left: auto;
+        margin-right: 0;
     }
 }
 
-/* Mobile screens */
-@media (max-width: 480px) {
-    body {
-        padding: var(--space-md);
-    }
-
-    .container {
-        padding: var(--space-md);
-    }
-
-    header h1 {
-        font-size: 1.75rem;
-    }
-
-    .schedule-table {
-        font-size: 0.875rem;
+/* Large screens */
+@media (min-width: 1024px) {
+    .form-essential {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
