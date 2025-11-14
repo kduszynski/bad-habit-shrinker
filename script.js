@@ -76,6 +76,31 @@ function formatDateForInput(date) {
 }
 
 /**
+ * Format a Date object into YYYY-MM-DD string for display
+ * @param {Date} date - JavaScript Date object
+ * @returns {string} Date string in YYYY-MM-DD format
+ */
+function formatDateDisplay(date) {
+    if (!date) return '';
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * Add days to a date and return a new Date object
+ * @param {Date} date - Starting date
+ * @param {number} days - Number of days to add
+ * @returns {Date} New Date object with days added
+ */
+function addDaysToDate(date, days) {
+    const result = new Date(date);
+    result.setUTCDate(result.getUTCDate() + days);
+    return result;
+}
+
+/**
  * Parse a YYYY-MM-DD date string into a UTC Date object
  * @param {string} dateString - Date string in YYYY-MM-DD format
  * @returns {Date|null} Date object or null if invalid
@@ -397,7 +422,7 @@ function handleFormSubmit(event) {
         );
 
         // Display results
-        displayResults(schedule, formData.startMin, formData.endMin, formData.finishMode, formData.days, formData.algorithm);
+        displayResults(schedule, formData.startMin, formData.endMin, formData.finishMode, formData.days, formData.algorithm, formData);
 
     } catch (error) {
         displayError(error.message);
@@ -508,8 +533,12 @@ function displayError(message) {
  * @param {Array} schedule - Array of schedule row objects
  * @param {number} startMin - Original start time
  * @param {number} endMin - Original end time
+ * @param {string} finishMode - Finish mode
+ * @param {number} totalDays - Total number of days
+ * @param {string} algorithmType - Algorithm type
+ * @param {Object} formData - Form data including date information
  */
-function displayResults(schedule, startMin, endMin, finishMode, totalDays, algorithmType) {
+function displayResults(schedule, startMin, endMin, finishMode, totalDays, algorithmType, formData) {
     const resultsSection = document.getElementById('results');
     const scheduleBody = document.getElementById('schedule-body');
     const collapseInfo = document.getElementById('collapse-info');
@@ -517,6 +546,7 @@ function displayResults(schedule, startMin, endMin, finishMode, totalDays, algor
     const summaryPerSideShrink = document.getElementById('summary-per-side-shrink');
     const summaryCollapseTime = document.getElementById('summary-collapse-time');
     const summaryAlgo = document.getElementById('summary-algo');
+    const summaryDays = document.getElementById('summary-days');
 
     if (!resultsSection || !scheduleBody || !collapseInfo || !summaryDailyShrink || !summaryPerSideShrink || !summaryCollapseTime) {
         console.error('Required DOM elements not found');
@@ -526,11 +556,32 @@ function displayResults(schedule, startMin, endMin, finishMode, totalDays, algor
     // Clear previous results
     scheduleBody.innerHTML = '';
 
-    // Add schedule rows to table
-    schedule.forEach(row => {
+    // Calculate days from dates if available, otherwise use totalDays
+    let daysInSchedule = totalDays;
+    let startDate = null;
+    if (formData.startDateValue && formData.endDateValue) {
+        daysInSchedule = calculateDaysFromDates(formData.startDateValue, formData.endDateValue);
+        startDate = parseDateInput(formData.startDateValue);
+    }
+
+    // Display days in schedule (always show, calculated from dates if available)
+    if (summaryDays) {
+        summaryDays.textContent = daysInSchedule;
+    }
+
+    // Add schedule rows to table with dates
+    schedule.forEach((row, index) => {
         const tableRow = document.createElement('tr');
+        
+        // Calculate date for this row
+        let dateStr = '';
+        if (startDate) {
+            const rowDate = addDaysToDate(startDate, row.dayId - 1);
+            dateStr = formatDateDisplay(rowDate);
+        }
 
         tableRow.innerHTML = `
+            <td>${dateStr}</td>
             <td>${row.dayId}</td>
             <td>${formatHHMM(row.startMin)}</td>
             <td>${formatHHMM(row.endMin)}</td>
@@ -572,17 +623,32 @@ function displayResults(schedule, startMin, endMin, finishMode, totalDays, algor
 
     collapseInfo.textContent = collapseDescriptor;
 
+    // Prepare schedule with dates for export
+    const scheduleWithDates = schedule.map((row, index) => {
+        let dateStr = '';
+        if (startDate) {
+            const rowDate = addDaysToDate(startDate, row.dayId - 1);
+            dateStr = formatDateDisplay(rowDate);
+        }
+        return {
+            ...row,
+            date: dateStr
+        };
+    });
+
     // Store schedule data for export
     currentScheduleData = {
-        schedule: schedule,
+        schedule: scheduleWithDates,
         startTime: formatHHMM(startMin),
         endTime: formatHHMM(endMin),
         dailyShrink: dailyShrinkMinutes,
         perSideShrink: perSideShrinkMinutes,
         collapseTime: formatHHMM(collapseMoment),
         totalDays: totalDays,
+        daysInSchedule: daysInSchedule,
         finishMode: finishMode,
-        algorithm: algorithmType
+        algorithm: algorithmType,
+        startDate: startDate ? formatDateDisplay(startDate) : null
     };
 
     // Show results section
@@ -613,18 +679,19 @@ function handleExportCSV() {
  * @param {Object} scheduleData - Schedule data object
  */
 function exportScheduleToCSV(scheduleData) {
-    const { schedule, startTime, endTime, dailyShrink, perSideShrink, collapseTime, totalDays, finishMode, algorithm } = scheduleData;
+    const { schedule, startTime, endTime, dailyShrink, perSideShrink, collapseTime, totalDays, finishMode, algorithm, daysInSchedule } = scheduleData;
 
     // Create CSV header
-    const headers = ['Day', 'Start Time', 'End Time'];
+    const headers = ['Date', 'Day', 'Start Time', 'End Time'];
     const csvRows = [headers.join(',')];
 
     // Add schedule rows
     schedule.forEach(row => {
+        const date = row.date || '';
         const day = row.dayId;
         const start = formatHHMM(row.startMin);
         const end = formatHHMM(row.endMin);
-        csvRows.push([day, start, end].join(','));
+        csvRows.push([date, day, start, end].join(','));
     });
 
     // Add summary information as comments/metadata
@@ -636,6 +703,9 @@ function exportScheduleToCSV(scheduleData) {
     csvRows.push(`# Per Side Shrink,${perSideShrink} min/day (each side)`);
     csvRows.push(`# Collapse Time,${collapseTime}`);
     csvRows.push(`# Total Days,${totalDays}`);
+    if (daysInSchedule !== undefined) {
+        csvRows.push(`# Days in Schedule,${daysInSchedule}`);
+    }
     csvRows.push(`# Finish Mode,${finishMode}`);
     csvRows.push(`# Algorithm,${algorithm}`);
 
