@@ -392,6 +392,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const startDateInput = document.getElementById('start-date');
     const endDateInput = document.getElementById('end-date');
     const exportBtn = document.getElementById('export-csv-btn');
+    const saveScheduleBtn = document.getElementById('save-schedule-btn');
     const newScheduleBtn = document.getElementById('new-schedule-btn');
 
     // Initialize date inputs first
@@ -445,6 +446,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (exportBtn) {
         exportBtn.addEventListener('click', handleExportCSV);
+    }
+
+    if (saveScheduleBtn) {
+        saveScheduleBtn.addEventListener('click', handleSaveSchedule);
     }
 
     if (newScheduleBtn) {
@@ -720,9 +725,6 @@ function displayResults(schedule, startMin, endMin, finishMode, totalDays, algor
         }
     };
 
-    // Save schedule to localStorage
-    saveScheduleToLocalStorage(currentScheduleData);
-
     // Show results section
     resultsSection.classList.remove('hidden');
 
@@ -819,6 +821,37 @@ function loadSavedSchedule() {
         console.error('Failed to load saved schedule:', error);
         // Clear invalid saved data
         clearSavedSchedule();
+    }
+}
+
+/**
+ * Handle save schedule button click - saves current schedule to localStorage
+ */
+function handleSaveSchedule() {
+    if (!currentScheduleData) {
+        displayError('No schedule data available to save');
+        return;
+    }
+
+    try {
+        saveScheduleToLocalStorage(currentScheduleData);
+        
+        // Show success feedback
+        const saveBtn = document.getElementById('save-schedule-btn');
+        if (saveBtn) {
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Saved!';
+            saveBtn.style.background = 'var(--success)';
+            saveBtn.disabled = true;
+            
+            setTimeout(() => {
+                saveBtn.textContent = originalText;
+                saveBtn.style.background = '';
+                saveBtn.disabled = false;
+            }, 2000);
+        }
+    } catch (error) {
+        displayError(`Failed to save schedule: ${error.message}`);
     }
 }
 

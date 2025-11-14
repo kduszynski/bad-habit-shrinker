@@ -682,9 +682,63 @@ select {
 .summary-actions {
     display: flex;
     justify-content: center;
+    gap: var(--space-md);
     margin-top: var(--space-md);
     padding-top: var(--space-md);
     border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.save-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+    letter-spacing: 0.01em;
+    position: relative;
+    overflow: hidden;
+}
+
+.save-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left var(--transition-slow);
+}
+
+.save-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.save-btn:hover::before {
+    left: 100%;
+}
+
+.save-btn:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-xs);
+}
+
+.save-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--primary-focus), var(--shadow-md);
+}
+
+.save-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
 }
 
 .export-btn {
