@@ -49,18 +49,45 @@ function parseHHMM(timeString) {
 }
 
 /**
+ * Normalize minutes to the canonical 0..(DAY_MINUTES-1) range.
+ * @param {number} minutes
+ * @returns {number}
+ */
+function normalizeMinutes(minutes) {
+    return ((minutes % DAY_MINUTES) + DAY_MINUTES) % DAY_MINUTES;
+}
+
+/**
  * Format minutes since midnight to HH:MM string
  * @param {number} minutes - Minutes since midnight
  * @returns {string} Time in "HH:MM" format
  */
 function formatHHMM(minutes) {
-    // Handle negative minutes and wrap around 24 hours
-    const normalized = ((minutes % DAY_MINUTES) + DAY_MINUTES) % DAY_MINUTES;
+    const normalized = normalizeMinutes(minutes);
 
     const hours = Math.floor(normalized / 60);
     const mins = normalized % 60;
 
     return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+}
+
+/**
+ * Compute the midpoint between two times on a circular 24h clock.
+ * This respects wrap-around (e.g. midpoint of 23:30 and 00:30 is 00:00, not 12:00).
+ * @param {number} aMinutes
+ * @param {number} bMinutes
+ * @returns {number}
+ */
+function circularMidpoint(aMinutes, bMinutes) {
+    const a = normalizeMinutes(aMinutes);
+    const b = normalizeMinutes(bMinutes);
+    let diff = (b - a + DAY_MINUTES) % DAY_MINUTES;
+
+    if (diff > DAY_MINUTES / 2) {
+        diff -= DAY_MINUTES;
+    }
+
+    return normalizeMinutes(a + diff / 2);
 }
 
 /**
@@ -171,6 +198,10 @@ function computeDailyStep(startMin, endMin, days, finishOnDay) {
 function computeOffsetsByAlgorithm(startMin, endMin, days, finishOnDay, algorithmType, percentage = 0.05) {
     const L = calculateWindowLength(startMin, endMin);
     const halfL = L / 2;
+
+    if (days === 1) {
+        return [0];
+    }
 
     // Helper for rounding collapse day according to finish mode (only used for linear)
     if (algorithmType === 'linear') {
@@ -557,7 +588,7 @@ function displayResults(schedule, startMin, endMin, finishMode, totalDays, algor
     summaryPerSideShrink.textContent = `${perSideShrinkMinutes} min/day (each side)`;
 
     const collapseMoment = finishMode === 'inclusive' && schedule.length > 0
-        ? Math.round((schedule[schedule.length - 1].startMin + schedule[schedule.length - 1].endMin) / 2)
+        ? Math.round(circularMidpoint(schedule[schedule.length - 1].startMin, schedule[schedule.length - 1].endMin))
         : collapseTime;
 
     summaryCollapseTime.textContent = formatHHMM(collapseMoment);
