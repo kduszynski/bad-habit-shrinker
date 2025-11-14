@@ -582,6 +582,20 @@ select {
     background: var(--bg-hover);
 }
 
+.schedule-table tbody tr.today-row {
+    background: rgba(251, 146, 60, 0.15);
+    border-left: 3px solid #fb923c;
+    font-weight: 600;
+}
+
+.schedule-table tbody tr.today-row td {
+    color: var(--text);
+}
+
+.schedule-table tbody tr.today-row:hover {
+    background: rgba(251, 146, 60, 0.25);
+}
+
 .schedule-table tbody tr:last-child td {
     border-bottom: none;
 }

@@ -630,6 +630,26 @@ function displayResults(schedule, startMin, endMin, finishMode, totalDays, algor
         summaryDays.textContent = daysInSchedule;
     }
 
+    // Get today's date in YYYY-MM-DD format for comparison (using local date)
+    const today = new Date();
+    const todayDateStr = formatDateDisplay(today);
+
+    // Helper function to normalize date string for comparison
+    // Ensures we compare dates consistently regardless of how they were stored
+    function normalizeDateForComparison(dateStr) {
+        if (!dateStr) return '';
+        // If dateStr is already in YYYY-MM-DD format, return as-is
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+            return dateStr;
+        }
+        // Otherwise try to parse and format it
+        const parsed = parseDateInput(dateStr);
+        if (parsed) {
+            return formatDateDisplay(parsed);
+        }
+        return dateStr;
+    }
+
     // Add schedule rows to table with dates
     schedule.forEach((row, index) => {
         const tableRow = document.createElement('tr');
@@ -639,6 +659,16 @@ function displayResults(schedule, startMin, endMin, finishMode, totalDays, algor
         if (startDate) {
             const rowDate = addDaysToDate(startDate, row.dayId - 1);
             dateStr = formatDateDisplay(rowDate);
+        } else if (row.date) {
+            // Use date from row if available (for loaded schedules)
+            dateStr = row.date;
+        }
+
+        // Check if this row represents today's date
+        // Normalize both dates for consistent comparison
+        const normalizedRowDate = normalizeDateForComparison(dateStr);
+        if (normalizedRowDate && normalizedRowDate === todayDateStr) {
+            tableRow.classList.add('today-row');
         }
 
         tableRow.innerHTML = `
