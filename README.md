@@ -6,12 +6,18 @@ A modern, mobile-first web application that simulates the progressive narrowing 
 
 ## 🚀 Quick Start
 
-1. **Start the web server:**
+1. **Install dependencies & build TypeScript:**
+    ```bash
+    npm install
+    npm run build
+    ```
+
+2. **Start the web server:**
    ```bash
    python3 -m http.server 8000
    ```
 
-2. **Open in browser:**
+3. **Open in browser:**
    ```
    http://localhost:8000
    ```
@@ -40,12 +46,13 @@ This web application calculates how a time window shrinks progressively over mul
 
 ```
 time-window-shrinker/
-├── index.html          # Main HTML structure
-├── styles.css          # Modern CSS styling with custom properties
-├── script.js           # Algorithm logic and DOM manipulation
-├── test_js_functions.js # Unit tests for algorithm
-├── main.py            # Original Python CLI tool
-└── README.md          # This documentation
+├── index.html           # Main HTML structure
+├── styles.css           # Modern CSS styling with custom properties
+├── src/script.ts        # Algorithm logic + DOM bindings (TypeScript)
+├── dist/script.js       # Compiled browser bundle (generated)
+├── test/timeWindow.test.ts # TypeScript unit tests
+├── main.py              # Original Python CLI tool
+└── README.md            # This documentation
 ```
 
 ## 🔧 Technical Implementation
@@ -142,7 +149,7 @@ Filename: `time-window-schedule-YYYYMMDD.csv`
 
 Run unit tests:
 ```bash
-node test_js_functions.js
+npm test
 ```
 
 Tests cover: normal operation, midnight crossing, all finish/rounding modes, date range calculation, error handling.
