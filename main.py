@@ -37,10 +37,18 @@ from __future__ import annotations
 
 import argparse
 import csv
+import math
 from dataclasses import dataclass
-from typing import Iterable, List, Tuple
+from typing import Iterable, List
 
 DAY_MIN = 24 * 60
+
+
+def round_half_away_from_zero(value: float) -> int:
+    """Round to nearest integer with halves going away from zero."""
+    if value >= 0:
+        return int(math.floor(value + 0.5))
+    return int(math.ceil(value - 0.5))
 
 
 # --------------------- Utilities ---------------------
@@ -151,7 +159,7 @@ def generate_schedule(
 
     def _round(x: float) -> int:
         if rounding == "nearest":
-            return int(round(x))
+            return round_half_away_from_zero(x)
         if rounding == "floor":
             return int(x // 1)
         if rounding == "ceil":
