@@ -300,6 +300,53 @@ function generateSchedule(startMin, endMin, days, finishOnDay, rounding, algorit
 // Store current schedule data for export
 let currentScheduleData = null;
 
+// ============================================
+// LocalStorage Management
+// ============================================
+
+const STORAGE_KEY = 'timeWindowSchedule';
+
+/**
+ * Save schedule data to localStorage
+ * @param {Object} scheduleData - Schedule data object to save
+ */
+function saveScheduleToLocalStorage(scheduleData) {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(scheduleData));
+    } catch (error) {
+        console.error('Failed to save schedule to localStorage:', error);
+        // Silently fail - localStorage might be disabled or full
+    }
+}
+
+/**
+ * Load schedule data from localStorage
+ * @returns {Object|null} Saved schedule data or null if not found/invalid
+ */
+function loadScheduleFromLocalStorage() {
+    try {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (!savedData) {
+            return null;
+        }
+        return JSON.parse(savedData);
+    } catch (error) {
+        console.error('Failed to load schedule from localStorage:', error);
+        return null;
+    }
+}
+
+/**
+ * Clear saved schedule from localStorage
+ */
+function clearSavedSchedule() {
+    try {
+        localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+        console.error('Failed to clear schedule from localStorage:', error);
+    }
+}
+
 /**
  * Initialize the application when DOM is loaded
  */
@@ -345,7 +392,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const startDateInput = document.getElementById('start-date');
     const endDateInput = document.getElementById('end-date');
     const exportBtn = document.getElementById('export-csv-btn');
+    const saveScheduleBtn = document.getElementById('save-schedule-btn');
+    const newScheduleBtn = document.getElementById('new-schedule-btn');
 
+    // Initialize date inputs first
     if (startDateInput) {
         const todayValue = formatDateForInput(new Date());
         if (!startDateInput.value) {
@@ -387,12 +437,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Load saved schedule on page load (after date inputs are initialized)
+    loadSavedSchedule();
+
     if (form) {
         form.addEventListener('submit', handleFormSubmit);
     }
 
     if (exportBtn) {
         exportBtn.addEventListener('click', handleExportCSV);
+    }
+
+    if (saveScheduleBtn) {
+        saveScheduleBtn.addEventListener('click', handleSaveSchedule);
+    }
+
+    if (newScheduleBtn) {
+        newScheduleBtn.addEventListener('click', handleNewSchedule);
     }
 });
 
@@ -569,6 +630,26 @@ function displayResults(schedule, startMin, endMin, finishMode, totalDays, algor
         summaryDays.textContent = daysInSchedule;
     }
 
+    // Get today's date in YYYY-MM-DD format for comparison (using local date)
+    const today = new Date();
+    const todayDateStr = formatDateDisplay(today);
+
+    // Helper function to normalize date string for comparison
+    // Ensures we compare dates consistently regardless of how they were stored
+    function normalizeDateForComparison(dateStr) {
+        if (!dateStr) return '';
+        // If dateStr is already in YYYY-MM-DD format, return as-is
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+            return dateStr;
+        }
+        // Otherwise try to parse and format it
+        const parsed = parseDateInput(dateStr);
+        if (parsed) {
+            return formatDateDisplay(parsed);
+        }
+        return dateStr;
+    }
+
     // Add schedule rows to table with dates
     schedule.forEach((row, index) => {
         const tableRow = document.createElement('tr');
@@ -578,6 +659,16 @@ function displayResults(schedule, startMin, endMin, finishMode, totalDays, algor
         if (startDate) {
             const rowDate = addDaysToDate(startDate, row.dayId - 1);
             dateStr = formatDateDisplay(rowDate);
+        } else if (row.date) {
+            // Use date from row if available (for loaded schedules)
+            dateStr = row.date;
+        }
+
+        // Check if this row represents today's date
+        // Normalize both dates for consistent comparison
+        const normalizedRowDate = normalizeDateForComparison(dateStr);
+        if (normalizedRowDate && normalizedRowDate === todayDateStr) {
+            tableRow.classList.add('today-row');
         }
 
         tableRow.innerHTML = `
@@ -648,7 +739,20 @@ function displayResults(schedule, startMin, endMin, finishMode, totalDays, algor
         daysInSchedule: daysInSchedule,
         finishMode: finishMode,
         algorithm: algorithmType,
-        startDate: startDate ? formatDateDisplay(startDate) : null
+        startDate: startDate ? formatDateDisplay(startDate) : null,
+        // Store form data for reloading
+        formData: {
+            startTime: formData.startTime,
+            endTime: formData.endTime,
+            days: formData.days,
+            finishMode: formData.finishMode,
+            rounding: formData.rounding,
+            algorithm: formData.algorithm,
+            daysSource: formData.daysSource,
+            rawDaysValue: formData.rawDaysValue,
+            startDateValue: formData.startDateValue,
+            endDateValue: formData.endDateValue
+        }
     };
 
     // Show results section
@@ -656,6 +760,170 @@ function displayResults(schedule, startMin, endMin, finishMode, totalDays, algor
 
     // Scroll to results
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/**
+ * Load saved schedule from localStorage and display it
+ */
+function loadSavedSchedule() {
+    const savedData = loadScheduleFromLocalStorage();
+    if (!savedData || !savedData.schedule || !savedData.formData) {
+        return; // No saved schedule found
+    }
+
+    try {
+        // Restore form values from saved data
+        const formData = savedData.formData;
+        
+        // Set form inputs
+        const startTimeInput = document.getElementById('start-time');
+        const endTimeInput = document.getElementById('end-time');
+        const daysInput = document.getElementById('days');
+        const finishModeInput = document.getElementById('finish-mode');
+        const roundingInput = document.getElementById('rounding');
+        const algorithmInput = document.getElementById('algorithm');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+
+        if (startTimeInput && formData.startTime) {
+            startTimeInput.value = formData.startTime;
+        }
+        if (endTimeInput && formData.endTime) {
+            endTimeInput.value = formData.endTime;
+        }
+        if (finishModeInput && formData.finishMode) {
+            finishModeInput.value = formData.finishMode;
+        }
+        if (roundingInput && formData.rounding) {
+            roundingInput.value = formData.rounding;
+        }
+        if (algorithmInput && formData.algorithm) {
+            algorithmInput.value = formData.algorithm;
+        }
+        if (startDateInput && formData.startDateValue) {
+            startDateInput.value = formData.startDateValue;
+            // Update min attribute for end date
+            if (endDateInput) {
+                endDateInput.min = formData.startDateValue;
+            }
+        }
+        if (endDateInput && formData.endDateValue) {
+            endDateInput.value = formData.endDateValue;
+        }
+        if (daysInput) {
+            if (formData.daysSource === 'manual' && formData.rawDaysValue) {
+                daysInput.value = formData.rawDaysValue;
+            } else {
+                daysInput.value = '';
+            }
+        }
+
+        // Reconstruct schedule data structure
+        const schedule = savedData.schedule.map(row => ({
+            dayId: row.dayId,
+            startMin: row.startMin,
+            endMin: row.endMin,
+            date: row.date || ''
+        }));
+
+        // Parse times and dates for display
+        const startMin = parseHHMM(savedData.startTime);
+        const endMin = parseHHMM(savedData.endTime);
+        let startDate = null;
+        if (formData.startDateValue) {
+            startDate = parseDateInput(formData.startDateValue);
+        }
+
+        // Display the schedule
+        displayResults(
+            schedule,
+            startMin,
+            endMin,
+            savedData.finishMode,
+            savedData.totalDays,
+            savedData.algorithm,
+            formData
+        );
+
+        // Restore currentScheduleData
+        currentScheduleData = savedData;
+    } catch (error) {
+        console.error('Failed to load saved schedule:', error);
+        // Clear invalid saved data
+        clearSavedSchedule();
+    }
+}
+
+/**
+ * Handle save schedule button click - saves current schedule to localStorage
+ */
+function handleSaveSchedule() {
+    if (!currentScheduleData) {
+        displayError('No schedule data available to save');
+        return;
+    }
+
+    try {
+        saveScheduleToLocalStorage(currentScheduleData);
+        
+        // Show success feedback
+        const saveBtn = document.getElementById('save-schedule-btn');
+        if (saveBtn) {
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Saved!';
+            saveBtn.style.background = 'var(--success)';
+            saveBtn.disabled = true;
+            
+            setTimeout(() => {
+                saveBtn.textContent = originalText;
+                saveBtn.style.background = '';
+                saveBtn.disabled = false;
+            }, 2000);
+        }
+    } catch (error) {
+        displayError(`Failed to save schedule: ${error.message}`);
+    }
+}
+
+/**
+ * Handle new schedule button click - clears saved schedule and resets form
+ */
+function handleNewSchedule() {
+    // Clear saved schedule
+    clearSavedSchedule();
+    currentScheduleData = null;
+
+    // Hide results section
+    const resultsSection = document.getElementById('results');
+    if (resultsSection) {
+        resultsSection.classList.add('hidden');
+    }
+
+    // Reset form
+    const form = document.getElementById('shrinker-form');
+    if (form) {
+        form.reset();
+        
+        // Reset date inputs to defaults
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        if (startDateInput) {
+            const todayValue = formatDateForInput(new Date());
+            startDateInput.value = todayValue;
+            if (endDateInput) {
+                endDateInput.min = todayValue;
+                const today = new Date();
+                const endOfYear = new Date(today.getFullYear(), 11, 31);
+                endDateInput.value = formatDateForInput(endOfYear);
+            }
+        }
+    }
+
+    // Scroll to top of form
+    const inputSection = document.querySelector('.input-section');
+    if (inputSection) {
+        inputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 /**
